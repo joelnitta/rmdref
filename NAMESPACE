@@ -2,4 +2,5 @@
 
 export("%>%")
 export(extract_citations)
+export(filter_refs_yaml)
 importFrom(magrittr,"%>%")

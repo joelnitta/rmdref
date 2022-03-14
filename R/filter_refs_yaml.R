@@ -8,6 +8,7 @@
 #' @param silent Logical; should a warning be issued for missing references?
 #'
 #' @return NULL; externally, the filtered YAML will be written to `yaml_out`
+#' @export
 #'
 filter_refs_yaml <- function(
   rmd_file,
