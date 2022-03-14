@@ -15,10 +15,14 @@ Roxygen: list(
     roclets = c("collate", "namespace", "rd", "roxyglobals::global_roclet"))
 RoxygenNote: 7.1.2
 Imports: 
+    dplyr,
+    glue,
     magrittr,
+    purrr,
     readr,
     stringr,
-    tibble
+    tibble,
+    yaml
 Suggests: 
     roxyglobals (>= 0.2.1)
 Remotes: 
