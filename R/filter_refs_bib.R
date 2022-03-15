@@ -70,7 +70,7 @@ filter_refs_bib <- function(
   missing <- citations %>% dplyr::anti_join(cite_keys_all, by = "key")
 
   if (nrow(missing) > 0 && silent == FALSE)
-    warning(glue::glue("The following ref keys are present in the Rmd but missing from the input bib file: {missing$key}")) # nolint
+    warning(glue::glue("The following ref keys are present in the Rmd but missing from the input bib file: {paste(missing$key, collapse = ', ')}")) # nolint
 
   # Filter bib to only those citation keys in the RMD
   ref_bib_filtered <- ref_bib[unique(citations$key)]

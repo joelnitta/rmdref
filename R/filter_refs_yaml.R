@@ -38,7 +38,7 @@ filter_refs_yaml <- function(
   missing <- citations %>% dplyr::anti_join(cite_keys_all, by = "key")
 
   if (nrow(missing) > 0 && silent == FALSE)
-    warning(glue::glue("The following ref keys are present in the Rmd but missing from the input YAML: {missing$key}")) # nolint
+    warning(glue::glue("The following ref keys are present in the Rmd but missing from the input YAML: {paste(missing$key, collapse = ', ')}")) # nolint
 
   cite_keys_filtered <- citations %>%
     dplyr::inner_join(cite_keys_all, by = "key")
