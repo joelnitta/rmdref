@@ -53,7 +53,7 @@ filter_refs_bib <- function(
   # Read in bib including all references
   if (inherits(bib_in, "character")) {
     ref_bib <- RefManageR::ReadBib(bib_in)
-  } else if (inherits(bib_in, "list")) {
+  } else if (is.list(bib_in) & inherits(bib_in, "BibEntry")) {
     ref_bib <- bib_in
   } else {
     stop("`bib_in` must be a path to a bibtex file (string) or a list read in with RefManageR::ReadBib()") # nolint
