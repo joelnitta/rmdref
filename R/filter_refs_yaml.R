@@ -3,7 +3,7 @@
 #' @param rmd_file Character vector; Path to Rmd file(s)
 #' @param yaml_in String or list; if string, the path to the YAML file to
 #' filter. If list, should be result of reading in a YAML file with
-#' yaml::read_yaml()
+#' [yaml::read_yaml()]
 #' @param yaml_out Path to write filtered YAML reference file
 #' @param silent Logical; should a warning be issued for missing references?
 #'

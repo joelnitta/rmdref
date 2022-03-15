@@ -16,7 +16,7 @@ filter_refs_yaml(
 
 \item{yaml_in}{String or list; if string, the path to the YAML file to
 filter. If list, should be result of reading in a YAML file with
-yaml::read_yaml()}
+\code{\link[yaml:read_yaml]{yaml::read_yaml()}}}
 
 \item{yaml_out}{Path to write filtered YAML reference file}
 
