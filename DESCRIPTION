@@ -17,11 +17,14 @@ RoxygenNote: 7.1.2
 Imports: 
     assertthat,
     dplyr,
+    fs,
     glue,
     magrittr,
+    processx,
     purrr,
     readr,
     RefManageR,
+    rmarkdown,
     stringr,
     tibble,
     yaml

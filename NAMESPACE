@@ -3,6 +3,7 @@
 export("%>%")
 export(cite)
 export(cite_p)
+export(cite_pd)
 export(cite_t)
 export(extract_citations)
 export(filter_refs_bib)
