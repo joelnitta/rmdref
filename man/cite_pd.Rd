@@ -3,7 +3,7 @@
 \name{cite_pd}
 \alias{cite_pd}
 \alias{bib_pd}
-\title{Cite a reference using pandoc}
+\title{Cite references using pandoc}
 \usage{
 cite_pd(
   ref,
@@ -36,7 +36,7 @@ bib_pd(
 )
 }
 \arguments{
-\item{ref}{Character vector of length 1; a character string including
+\item{ref}{Character vector, each element including
 one or more citations in pandoc format used to create a citation
 (\code{cite_pd()}) or bibliography entry (\code{bib_pd()}).}
 
@@ -86,15 +86,15 @@ setting environmental variable \code{CONTEXT_FILE}.}
 Character vector.
 }
 \description{
-Unlike the normal use of pandoc to render \code{Rmd} to an output format, this
-just returns a formatted citation or bibliography.
+Unlike the typical use of pandoc to render \code{Rmd} to an output format, this
+returns a formatted citation or bibliography as a character vector.
 }
 \details{
 \code{cite_pd()} creates citations; \code{bib_pd()} creates a bibliography
 (list of references).
 
 This function can be used to generate pandoc-formatted references in formats
-that normally don't support pandoc, such as slides with xaringan or
+that normally don't support pandoc, such as slides created with xaringan or
 CSV files.
 
 The pandoc format for citing references is \verb{@<key>}, where \verb{<key>} is the
@@ -105,7 +105,7 @@ disambiguate references when generating a citation (cases where an 'a', 'b',
 etc. needs to be added to differentiate between publications whose author and
 year are the same). If you need to distinguish between such publications that
 are cited in the same file (or set of files), provide the file path(s) to
-\code{context}.
+\code{context} (see Examples).
 }
 \examples{
 # Specify example bibliography file (yaml format)
@@ -119,19 +119,24 @@ utils::download.file(
   csl
 )
 
-# Cite the reference (note no disambiguation)
+# Cite a reference
 cite_pd("@Nitta2011a", bib = bib, csl = csl)
 
 # Since the `bib` and `csl` objects match their default names for `cite_pd()`
 # they can be omitted from the function call.
 cite_pd("@Nitta2011a")
 
+# Note the lack of disambiguation: these citations appear the same because
+# they have the same author (when abbreviated to first author + "et al") and
+# year, even though the publications are different.
+cite_pd(c("@Nitta2011a", "@Nitta2011b"))
+
 # Provide context for disambiguation: a CSV file with some cited references
 csv_file <- system.file(
   "extdata", "data.csv", package = "rmdref", mustWork = TRUE)
 read.csv(csv_file)
 
-cite_pd("@Nitta2011a", context = csv_file)
+cite_pd(c("@Nitta2011a", "@Nitta2011b"), context = csv_file)
 
 # Make a list of references in the CSV file
 bib_pd(context = csv_file, wrap = "none")

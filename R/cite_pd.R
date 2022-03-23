@@ -1,13 +1,13 @@
-#' Cite a reference using pandoc
+#' Cite references using pandoc
 #'
-#' Unlike the normal use of pandoc to render `Rmd` to an output format, this
-#' just returns a formatted citation or bibliography.
+#' Unlike the typical use of pandoc to render `Rmd` to an output format, this
+#' returns a formatted citation or bibliography as a character vector.
 #'
 #' `cite_pd()` creates citations; `bib_pd()` creates a bibliography
 #' (list of references).
 #'
 #' This function can be used to generate pandoc-formatted references in formats
-#' that normally don't support pandoc, such as slides with xaringan or
+#' that normally don't support pandoc, such as slides created with xaringan or
 #' CSV files.
 #'
 #' The pandoc format for citing references is `@<key>`, where `<key>` is the
@@ -18,9 +18,9 @@
 #' etc. needs to be added to differentiate between publications whose author and
 #' year are the same). If you need to distinguish between such publications that
 #' are cited in the same file (or set of files), provide the file path(s) to
-#' `context`.
+#' `context` (see Examples).
 #'
-#' @param ref Character vector of length 1; a character string including
+#' @param ref Character vector, each element including
 #' one or more citations in pandoc format used to create a citation
 #' (`cite_pd()`) or bibliography entry (`bib_pd()`).
 #' @param bib Character vector; path to bibliography file(s) in `bib` or `yaml`
@@ -69,19 +69,24 @@
 #'   csl
 #' )
 #'
-#' # Cite the reference (note no disambiguation)
+#' # Cite a reference
 #' cite_pd("@Nitta2011a", bib = bib, csl = csl)
 #'
 #' # Since the `bib` and `csl` objects match their default names for `cite_pd()`
 #' # they can be omitted from the function call.
 #' cite_pd("@Nitta2011a")
 #'
+#' # Note the lack of disambiguation: these citations appear the same because
+#' # they have the same author (when abbreviated to first author + "et al") and
+#' # year, even though the publications are different.
+#' cite_pd(c("@Nitta2011a", "@Nitta2011b"))
+#'
 #' # Provide context for disambiguation: a CSV file with some cited references
 #' csv_file <- system.file(
 #'   "extdata", "data.csv", package = "rmdref", mustWork = TRUE)
 #' read.csv(csv_file)
 #'
-#' cite_pd("@Nitta2011a", context = csv_file)
+#' cite_pd(c("@Nitta2011a", "@Nitta2011b"), context = csv_file)
 #'
 #' # Make a list of references in the CSV file
 #' bib_pd(context = csv_file, wrap = "none")
@@ -97,7 +102,7 @@ cite_pd <- function(
   default_bib = Sys.getenv("BIB_FILE", unset = "bib"),
   default_csl = Sys.getenv("CSL_FILE", unset = "csl"),
   default_context = Sys.getenv("CONTEXT_FILE", unset = "context")
-  ) {
+) {
 
   # Use 'bib' in global env if available
   if (default_bib %in% ls(envir = .GlobalEnv) & missing(bib)) {
@@ -121,7 +126,7 @@ cite_pd <- function(
   assertthat::assert_that(
     fs::file_exists(csl),
     msg = glue::glue("Cannot find file '{csl}'"))
-  assertthat::assert_that(assertthat::is.string(ref))
+  assertthat::assert_that(is.character(ref))
   assertthat::assert_that(assertthat::is.string(format))
   assertthat::assert_that(assertthat::is.flag(glue))
   assertthat::assert_that(assertthat::is.string(wrap))
@@ -129,6 +134,36 @@ cite_pd <- function(
   if (!is.null(other_pd_args)) {
     assertthat::assert_that(is.character(other_pd_args))
   }
+
+  # Either cite single reference
+  if (length(ref) == 1) {
+    cite_pd_single(
+      ref = ref, bib = bib, csl = csl, context = context,
+      wrap = wrap, columns = columns, other_pd_args = other_pd_args)
+  }
+
+  # Or map over multiple references
+  purrr::map_chr(
+    ref,
+    ~cite_pd_single(
+      ref = ., bib = bib, csl = csl, context = context,
+      wrap = wrap, columns = columns, other_pd_args = other_pd_args)
+  )
+}
+
+#' Non-vectorized version of cite_pd()
+#' Internal function.
+#' @rdname cite_pd
+#' @noRd
+cite_pd_single <- function(
+  ref, bib, csl, context = NULL,
+  format = "plain", glue = TRUE,
+  wrap = "auto", columns = 72,
+  other_pd_args = NULL,
+  default_bib = Sys.getenv("BIB_FILE", unset = "bib"),
+  default_csl = Sys.getenv("CSL_FILE", unset = "csl"),
+  default_context = Sys.getenv("CONTEXT_FILE", unset = "context")
+) {
 
   # Format "no cite" list of citations
   # Normally used to include in bibliography without citing
