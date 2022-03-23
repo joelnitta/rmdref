@@ -2,7 +2,7 @@
 
 export("%>%")
 export(bib_pd)
-export(cite)
+export(cite_bib)
 export(cite_p)
 export(cite_pd)
 export(cite_t)

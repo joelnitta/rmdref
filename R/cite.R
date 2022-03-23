@@ -6,8 +6,8 @@
 #' Either `bib` or `default_bib` should be provided, but not both
 #' (see examples).
 #'
-#' `cite_p()` is a shortcut for `cite(type = "p", ...)` and
-#' `cite_t()` is a shortcut for `cite(type = "t", ...)`.
+#' `cite_p()` is a shortcut for `cite_bib(type = "p", ...)` and
+#' `cite_t()` is a shortcut for `cite_bib(type = "t", ...)`.
 #'
 #' @param key Character vector; reference bibtex key(s)
 #' @param type Character vector of length 1; type of citation. Must choose
@@ -29,14 +29,14 @@
 #' head(names(bib))
 #'
 #' # If an object called "bib" exists, it will be used by default for citing
-#' cite(c("tekwe2013application", "sarkar2013adaptive"), "t")
+#' cite_bib(c("tekwe2013application", "sarkar2013adaptive"), "t")
 #' # You can change the default name with the environmental variable "BIB_NAME"
 #' my_bib <- bib
 #' rm(bib)
 #' Sys.setenv("BIB_NAME" = "my_bib")
-#' cite("tekwe2013application", "t")
+#' cite_bib("tekwe2013application", "t")
 #' # Or provide the bibliography directly
-#' cite("tekwe2013application", "t", bib = my_bib)
+#' cite_bib("tekwe2013application", "t", bib = my_bib)
 #'
 #' # Use cite_t() and cite_p() to avoid specifying "type"
 #' cite_p("tekwe2013application")
@@ -44,7 +44,7 @@
 #' } else {
 #'   warning("Need bibtex package for example")
 #' }
-cite <- function(
+cite_bib <- function(
   key, type = c("t", "p"), bib,
   default_bib = Sys.getenv("BIB_NAME", unset = "bib")) {
   # Use 'bib' in global env if available
@@ -75,16 +75,16 @@ cite <- function(
   )
 }
 
-#' @rdname cite
+#' @rdname cite_bib
 #' @export
 cite_p <- function(
   key, bib, default_bib = Sys.getenv("BIB_NAME", unset = "bib")) {
-  cite(key = key, bib = bib, type = "p", default_bib = default_bib)
+  cite_bib(key = key, bib = bib, type = "p", default_bib = default_bib)
 }
 
-#' @rdname cite
+#' @rdname cite_bib
 #' @export
 cite_t <- function(
   key, bib, default_bib = Sys.getenv("BIB_NAME", unset = "bib")) {
-  cite(key = key, bib = bib, type = "t", default_bib = default_bib)
+  cite_bib(key = key, bib = bib, type = "t", default_bib = default_bib)
 }
