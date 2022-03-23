@@ -14,7 +14,10 @@ cite_pd(
   glue = TRUE,
   wrap = "auto",
   columns = 72,
-  other_pd_args = NULL
+  other_pd_args = NULL,
+  default_bib = Sys.getenv("BIB_FILE", unset = "bib"),
+  default_csl = Sys.getenv("CSL_FILE", unset = "csl"),
+  default_context = Sys.getenv("CONTEXT_FILE", unset = "context")
 )
 
 bib_pd(
@@ -26,7 +29,10 @@ bib_pd(
   glue = TRUE,
   wrap = "auto",
   columns = 72,
-  other_pd_args = NULL
+  other_pd_args = NULL,
+  default_bib = Sys.getenv("BIB_FILE", unset = "bib"),
+  default_csl = Sys.getenv("CSL_FILE", unset = "csl"),
+  default_context = Sys.getenv("CONTEXT_FILE", unset = "context")
 )
 }
 \arguments{
@@ -63,6 +69,18 @@ wrapping from the source document.}
 \item{other_pd_args}{Character vector; other arguments to pass to pandoc.
 Must be formatted with one element per word
 (as in \code{args} for \code{\link[processx:run]{processx::run()}}).}
+
+\item{default_bib}{Name of a character vector object in the global
+environment to use for \code{bib}; defaults to \code{"bib"}. Can be changed by
+setting environmental variable \code{BIB_FILE}.}
+
+\item{default_csl}{Name of a character vector object in the global
+environment to use for \code{csl}; defaults to \code{"csl"}. Can be changed by
+setting environmental variable \code{CSL_FILE}.}
+
+\item{default_context}{Name of a character vector object in the global
+environment to use for \code{context}; defaults to \code{"context"}. Can be changed by
+setting environmental variable \code{CONTEXT_FILE}.}
 }
 \value{
 Character vector.
@@ -91,30 +109,34 @@ are cited in the same file (or set of files), provide the file path(s) to
 }
 \examples{
 # Specify example bibliography file (yaml format)
-my_bib <- system.file(
+bib <- system.file(
   "extdata", "refs.yaml", package = "rmdref", mustWork = TRUE)
 
 # Download a CSL file to a temporary location
-temp_csl <- tempfile(fileext = ".csl")
+csl <- tempfile(fileext = ".csl")
 utils::download.file(
   "https://raw.githubusercontent.com/citation-style-language/styles/master/ecology.csl", # nolint
-  temp_csl
+  csl
 )
 
 # Cite the reference (note no disambiguation)
-cite_pd("@Nitta2011a", my_bib, temp_csl)
+cite_pd("@Nitta2011a", bib = bib, csl = csl)
+
+# Since the `bib` and `csl` objects match their default names for `cite_pd()`
+# they can be omitted from the function call.
+cite_pd("@Nitta2011a")
 
 # Provide context for disambiguation: a CSV file with some cited references
 csv_file <- system.file(
   "extdata", "data.csv", package = "rmdref", mustWork = TRUE)
 read.csv(csv_file)
 
-cite_pd("@Nitta2011a", my_bib, temp_csl, csv_file)
+cite_pd("@Nitta2011a", context = csv_file)
 
-# Make a list of references
-bib_pd(bib = my_bib, csl = temp_csl, context = csv_file, wrap = "none")
+# Make a list of references in the CSV file
+bib_pd(context = csv_file, wrap = "none")
 
 # Delete the temporary file
-unlink(temp_csl)
+unlink(csl)
 
 }

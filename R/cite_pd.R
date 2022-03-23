@@ -45,42 +45,72 @@
 #' @param other_pd_args Character vector; other arguments to pass to pandoc.
 #' Must be formatted with one element per word
 #' (as in `args` for [processx::run()]).
+#' @param default_bib Name of a character vector object in the global
+#' environment to use for `bib`; defaults to `"bib"`. Can be changed by
+#' setting environmental variable `BIB_FILE`.
+#' @param default_csl Name of a character vector object in the global
+#' environment to use for `csl`; defaults to `"csl"`. Can be changed by
+#' setting environmental variable `CSL_FILE`.
+#' @param default_context Name of a character vector object in the global
+#' environment to use for `context`; defaults to `"context"`. Can be changed by
+#' setting environmental variable `CONTEXT_FILE`.
 #'
 #' @return Character vector.
 #' @export
 #' @examples
 #' # Specify example bibliography file (yaml format)
-#' my_bib <- system.file(
+#' bib <- system.file(
 #'   "extdata", "refs.yaml", package = "rmdref", mustWork = TRUE)
 #'
 #' # Download a CSL file to a temporary location
-#' temp_csl <- tempfile(fileext = ".csl")
+#' csl <- tempfile(fileext = ".csl")
 #' utils::download.file(
 #'   "https://raw.githubusercontent.com/citation-style-language/styles/master/ecology.csl", # nolint
-#'   temp_csl
+#'   csl
 #' )
 #'
 #' # Cite the reference (note no disambiguation)
-#' cite_pd("@Nitta2011a", my_bib, temp_csl)
+#' cite_pd("@Nitta2011a", bib = bib, csl = csl)
+#'
+#' # Since the `bib` and `csl` objects match their default names for `cite_pd()`
+#' # they can be omitted from the function call.
+#' cite_pd("@Nitta2011a")
 #'
 #' # Provide context for disambiguation: a CSV file with some cited references
 #' csv_file <- system.file(
 #'   "extdata", "data.csv", package = "rmdref", mustWork = TRUE)
 #' read.csv(csv_file)
 #'
-#' cite_pd("@Nitta2011a", my_bib, temp_csl, csv_file)
+#' cite_pd("@Nitta2011a", context = csv_file)
 #'
-#' # Make a list of references
-#' bib_pd(bib = my_bib, csl = temp_csl, context = csv_file, wrap = "none")
+#' # Make a list of references in the CSV file
+#' bib_pd(context = csv_file, wrap = "none")
 #'
 #' # Delete the temporary file
-#' unlink(temp_csl)
+#' unlink(csl)
 #'
 cite_pd <- function(
   ref, bib, csl, context = NULL,
   format = "plain", glue = TRUE,
   wrap = "auto", columns = 72,
-  other_pd_args = NULL) {
+  other_pd_args = NULL,
+  default_bib = Sys.getenv("BIB_FILE", unset = "bib"),
+  default_csl = Sys.getenv("CSL_FILE", unset = "csl"),
+  default_context = Sys.getenv("CONTEXT_FILE", unset = "context")
+  ) {
+
+  # Use 'bib' in global env if available
+  if (default_bib %in% ls(envir = .GlobalEnv) & missing(bib)) {
+    bib <- get(default_bib, envir = .GlobalEnv)
+  }
+  # Use 'csl' in global env if available
+  if (default_csl %in% ls(envir = .GlobalEnv) & missing(csl)) {
+    csl <- get(default_csl, envir = .GlobalEnv)
+  }
+  # Use 'context' in global env if available
+  if (default_context %in% ls(envir = .GlobalEnv) & missing(context)) {
+    context <- get(default_context, envir = .GlobalEnv)
+  }
 
   # Check input
   for (i in seq_along(bib)) {
@@ -154,7 +184,23 @@ bib_pd <- function(
   ref = NULL, bib, csl, context = NULL,
   format = "plain", glue = TRUE,
   wrap = "auto", columns = 72,
-  other_pd_args = NULL) {
+  other_pd_args = NULL,
+  default_bib = Sys.getenv("BIB_FILE", unset = "bib"),
+  default_csl = Sys.getenv("CSL_FILE", unset = "csl"),
+  default_context = Sys.getenv("CONTEXT_FILE", unset = "context")) {
+
+  # Use 'bib' in global env if available
+  if (default_bib %in% ls(envir = .GlobalEnv) & missing(bib)) {
+    bib <- get(default_bib, envir = .GlobalEnv)
+  }
+  # Use 'csl' in global env if available
+  if (default_csl %in% ls(envir = .GlobalEnv) & missing(csl)) {
+    csl <- get(default_csl, envir = .GlobalEnv)
+  }
+  # Use 'context' in global env if available
+  if (default_context %in% ls(envir = .GlobalEnv) & missing(context)) {
+    context <- get(default_context, envir = .GlobalEnv)
+  }
 
   # Check input
   for (i in seq_along(bib)) {
