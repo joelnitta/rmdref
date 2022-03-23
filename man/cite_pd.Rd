@@ -2,13 +2,37 @@
 % Please edit documentation in R/cite_pd.R
 \name{cite_pd}
 \alias{cite_pd}
+\alias{bib_pd}
 \title{Cite a reference using pandoc}
 \usage{
-cite_pd(ref, bib, csl, context = NULL, format = "plain", glue = TRUE)
+cite_pd(
+  ref,
+  bib,
+  csl,
+  context = NULL,
+  format = "plain",
+  glue = TRUE,
+  wrap = "auto",
+  columns = 72,
+  other_pd_args = NULL
+)
+
+bib_pd(
+  ref = NULL,
+  bib,
+  csl,
+  context = NULL,
+  format = "plain",
+  glue = TRUE,
+  wrap = "auto",
+  columns = 72,
+  other_pd_args = NULL
+)
 }
 \arguments{
 \item{ref}{Character vector of length 1; a character string including
-the reference to cite, in pandoc format. See examples.}
+one or more citations in pandoc format used to create a citation
+(\code{cite_pd()}) or bibliography entry (\code{bib_pd()}).}
 
 \item{bib}{Character vector; path to bibliography file(s) in \code{bib} or \code{yaml}
 format.}
@@ -16,8 +40,9 @@ format.}
 \item{csl}{Character vector of length 1; path to CSL file.}
 
 \item{context}{Character vector; path to file(s) with citations in pandoc
-format. These aren't cited, but used
-for disambiguating references (see Details).}
+format. If used with \code{cite_pd()}, these aren't cited, but used
+for disambiguating references (see Details). If used with \code{bib_pd()}, all
+references in the file(s) will appear in the bibliography.}
 
 \item{format}{Character vector of length 1; pandoc output format. Must be
 a valid output format for the pandoc \code{-t} argument. For a complete list,
@@ -26,15 +51,30 @@ see https://pandoc.org/MANUAL.html#general-options}
 \item{glue}{Logical vector of length 1; should the output be passed through
 \code{\link[glue:glue]{glue::glue()}}? Generally results in nicer printing (e.g., line breaks
 show up on different lines instead of \verb{\\n}). Default \code{TRUE}.}
+
+\item{wrap}{Character vector of length 1; type of line wrapping in output.
+With \code{auto} (the default), pandoc will attempt to wrap lines to the column
+width specified by \code{columns} (default 72). With \code{none}, pandoc will not
+wrap lines at all. With \code{preserve}, pandoc will attempt to preserve the
+wrapping from the source document.}
+
+\item{columns}{Numeric vector of length 1; width of lines when wrapping.}
+
+\item{other_pd_args}{Character vector; other arguments to pass to pandoc.
+Must be formatted with one element per word
+(as in \code{args} for \code{\link[processx:run]{processx::run()}}).}
 }
 \value{
 Character vector.
 }
 \description{
 Unlike the normal use of pandoc to render \code{Rmd} to an output format, this
-just returns a single formatted reference.
+just returns a formatted citation or bibliography.
 }
 \details{
+\code{cite_pd()} creates citations; \code{bib_pd()} creates a bibliography
+(list of references).
+
 This function can be used to generate pandoc-formatted references in formats
 that normally don't support pandoc, such as slides with xaringan or
 CSV files.
@@ -42,12 +82,12 @@ CSV files.
 The pandoc format for citing references is \verb{@<key>}, where \verb{<key>} is the
 reference key (e.g., \verb{@Nitta2011} or \verb{[@Nitta2011]}).
 
-Note that since pandoc isn't seeing a full (R)md file, it won't
-automatically disambiguate references (cases where an 'a', 'b', etc. needs
-to be added to differentiate between publications whose author and
-year are the same). If you need to distinguish between such publications
-that are cited in the same file (or set of files), provide the file path(s)
-to \code{context}.
+Note that since pandoc isn't seeing a full (R)md file, it won't automatically
+disambiguate references when generating a citation (cases where an 'a', 'b',
+etc. needs to be added to differentiate between publications whose author and
+year are the same). If you need to distinguish between such publications that
+are cited in the same file (or set of files), provide the file path(s) to
+\code{context}.
 }
 \examples{
 # Specify example bibliography file (yaml format)
@@ -70,6 +110,9 @@ csv_file <- system.file(
 read.csv(csv_file)
 
 cite_pd("@Nitta2011a", my_bib, temp_csl, csv_file)
+
+# Make a list of references
+bib_pd(bib = my_bib, csl = temp_csl, context = csv_file, wrap = "none")
 
 # Delete the temporary file
 unlink(temp_csl)
