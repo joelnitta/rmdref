@@ -7,7 +7,7 @@
 extract_citations(rmd_file)
 }
 \arguments{
-\item{rmd_file}{Character vector; path to Rmd file}
+\item{rmd_file}{Character vector; path to Rmd file(s)}
 }
 \value{
 Dataframe (tibble) with one column 'key'

@@ -4,26 +4,28 @@
 \alias{cite_pd}
 \title{Cite a reference using pandoc}
 \usage{
-cite_pd(ref, bib, csl, format = "plain", glue = TRUE, del_after = NULL)
+cite_pd(ref, bib, csl, context = NULL, format = "plain", glue = TRUE)
 }
 \arguments{
 \item{ref}{Character vector of length 1; a character string including
-the reference to cite, in pandoc MD format. See examples.}
+the reference to cite, in pandoc format. See examples.}
 
 \item{bib}{Character vector; path to bibliography file(s) in \code{bib} or \code{yaml}
 format.}
 
 \item{csl}{Character vector of length 1; path to CSL file.}
 
+\item{context}{Character vector; path to file(s) with citations in pandoc
+format. These aren't cited, but used
+for disambiguating references (see Details).}
+
 \item{format}{Character vector of length 1; pandoc output format. Must be
 a valid output format for the pandoc \code{-t} argument. For a complete list,
 see https://pandoc.org/MANUAL.html#general-options}
 
 \item{glue}{Logical vector of length 1; should the output be passed through
-\code{\link[glue:glue]{glue::glue()}}?}
-
-\item{del_after}{Character vector of length 1; string to mark place where
-text will be deleted from that point to the end of the citation.}
+\code{\link[glue:glue]{glue::glue()}}? Generally results in nicer printing (e.g., line breaks
+show up on different lines instead of \verb{\\n}). Default \code{TRUE}.}
 }
 \value{
 Character vector.
@@ -37,11 +39,15 @@ This function can be used to generate pandoc-formatted references in formats
 that normally don't support pandoc, such as slides with xaringan or
 CSV files.
 
+The pandoc format for citing references is \verb{@<key>}, where \verb{<key>} is the
+reference key (e.g., \verb{@Nitta2011} or \verb{[@Nitta2011]}).
+
 Note that since pandoc isn't seeing a full (R)md file, it won't
-automatically disambiguate references (cases where an 'a', 'b', etc needs
-to be added to differentiate between publications because the author and
-year are the same). You can use the \code{del_after} argument as a work-around
-(see Examples).
+automatically disambiguate references (cases where an 'a', 'b', etc. needs
+to be added to differentiate between publications whose author and
+year are the same). If you need to distinguish between such publications
+that are cited in the same file (or set of files), provide the file path(s)
+to \code{context}.
 }
 \examples{
 # Specify example bibliography file (yaml format)
@@ -51,22 +57,19 @@ my_bib <- system.file(
 # Download a CSL file to a temporary location
 temp_csl <- tempfile(fileext = ".csl")
 utils::download.file(
-  "https://raw.githubusercontent.com/citation-style-language/styles/master/ecology.csl",
+  "https://raw.githubusercontent.com/citation-style-language/styles/master/ecology.csl", # nolint
   temp_csl
 )
 
-# Cite the reference
+# Cite the reference (note no disambiguation)
 cite_pd("@Nitta2011a", my_bib, temp_csl)
 
-# The first argument can be any string that may include one or more
-# references in pandoc format
-cite_pd(
-  "I agree with @Nitta2021 because they are right [@Nitta2011b].",
-  my_bib, temp_csl)
+# Provide context for disambiguation: a CSV file with some cited references
+csv_file <- system.file(
+  "extdata", "data.csv", package = "rmdref", mustWork = TRUE)
+read.csv(csv_file)
 
-# Use `del_after` as a work-around for disambiguating references.
-# e.g., if you want to print "Nitta 2011a":
-cite_pd("@Nitta2011a|@Nitta2011b", my_bib, temp_csl, del_after = "|")
+cite_pd("@Nitta2011a", my_bib, temp_csl, csv_file)
 
 # Delete the temporary file
 unlink(temp_csl)

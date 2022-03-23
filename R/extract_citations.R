@@ -1,6 +1,6 @@
 #' Extract citations (formatted like `[@key]`) from an Rmd file
 #'
-#' @param rmd_file Character vector; path to Rmd file
+#' @param rmd_file Character vector; path to Rmd file(s)
 #'
 #' @return Dataframe (tibble) with one column 'key'
 #' @export
@@ -19,6 +19,11 @@
 #' extract_citations(tempfile)
 #' file.remove(tempfile)
 extract_citations <- function(rmd_file) {
+  for (i in seq_along(rmd_file)) {
+    assertthat::assert_that(
+      fs::file_exists(rmd_file[[i]]),
+      msg = "Can't find file")
+  }
   readr::read_lines(rmd_file) %>%
     stringr::str_split(" |;") %>%
     unlist %>%
